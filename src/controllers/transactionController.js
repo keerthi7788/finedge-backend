@@ -1,26 +1,46 @@
-const transactionService = require("../services/transactionService");
+const { getTransactionSummary } = require('../services/transactionService');
+const {
+createTransactionUtility,
+} = require("../services/transactionService");
 
-exports.createTransaction = async (req, res) => {
-  const transaction = await transactionService.createTransaction(req.body);
+const createTransaction = async (req, res) => {
+  const transaction = await createTransactionUtility(req.body);
   res.json(transaction);
 };
 
-exports.getTransactions = async (req, res) => {
-  const transactions = await transactionService.getTransactions();
+const getTransactions = async (req, res) => {
+  const transactions = await getTransactions();
   res.json(transactions);
 };
 
-exports.getTransactionById = async (req, res) => {
-  const transaction = await transactionService.getTransactionById(req.params.id);
+const getTransactionById = async (req, res) => {
+  const transaction = await getTransactionById(req.params.id);
   res.json(transaction);
 };
 
-exports.deleteTransaction = async (req, res) => {
-  const result = await transactionService.deleteTransaction(req.params.id);
+const deleteTransaction = async (req, res) => {
+  const result = await deleteTransaction(req.params.id);
   res.json(result);
 };
 
-exports.getSummary = async (req, res) => {
-  const summary = await transactionService.getSummary(req.params.userId);
-  res.json(summary);
+const getSummary = async (req, res) => {
+    try {
+        const summary = await getTransactionSummary(req.user.email); // req.user set by validateJWT
+        res.status(200).json(summary);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
 };
+
+module.exports = {
+    getSummary,
+    createTransaction,
+    getTransactions,
+    getTransactionById,
+    deleteTransaction
+};
+
+// exports.getSummary = async (req, res) => {
+//   const summary = await getSummary(req.params.userId);
+//   res.json(summary);
+// };

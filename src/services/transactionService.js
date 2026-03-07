@@ -1,9 +1,10 @@
+const Transaction = require('../models/transactionModel');
+const cache = require('./cacheService');
 const { v4: uuidv4 } = require("uuid");
 const transactionModel = require("../models/transactionModel");
 const { getSummary } = require("../utils/analytics");
 
-exports.createTransaction = async (data) => {
-
+const createTransactionUtility = async (data) => {
   const transactions = await transactionModel.getTransactions();
 
   const newTransaction = {
@@ -22,16 +23,16 @@ exports.createTransaction = async (data) => {
   return newTransaction;
 };
 
-exports.getTransactions = async () => {
+const getTransactions = async () => {
   return await transactionModel.getTransactions();
 };
 
-exports.getTransactionById = async (id) => {
+const getTransactionById = async (id) => {
   const transactions = await transactionModel.getTransactions();
   return transactions.find(t => t.id === id);
 };
 
-exports.deleteTransaction = async (id) => {
+const deleteTransaction = async (id) => {
 
   let transactions = await transactionModel.getTransactions();
 
@@ -42,11 +43,39 @@ exports.deleteTransaction = async (id) => {
   return { message: "Transaction deleted" };
 };
 
-exports.getSummary = async (userId) => {
+const getTransactionSummary = async (userEmail) => {
+    const cacheKey = `summary:${userEmail}`;
 
-  const transactions = await transactionModel.getTransactions();
+    const cached = cache.get(cacheKey);
+    if (cached) return cached;           
 
-  const userTransactions = transactions.filter(t => t.userId === userId);
+    const transactions = await Transaction.find({ userEmail });
 
-  return getSummary(userTransactions);
+    const summary = {
+        totalIncome: 0,
+        totalExpense: 0,
+        netBalance: 0,
+        byCategory: {}
+    };
+
+    for (const tx of transactions) {
+        if (tx.type === 'income') {
+            summary.totalIncome += tx.amount;
+        } else {
+            summary.totalExpense += tx.amount;
+        } 
+        summary.byCategory[tx.category] = (summary.byCategory[tx.category] || 0) + tx.amount;
+    }
+    summary.netBalance = summary.totalIncome - summary.totalExpense;
+
+    cache.set(cacheKey, summary, 60 * 1000);
+    return summary;
+};
+
+module.exports = { 
+    getTransactionSummary,
+    createTransactionUtility,
+    getTransactions,
+    getTransactionById,
+    deleteTransaction
 };
