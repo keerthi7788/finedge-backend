@@ -1,6 +1,7 @@
 const userService = require("../services/userService");
 
 exports.createUser = async (req, res) => {
+  console.log("Creating user with data:", req.body);
   const user = await userService.createUser(req.body);
   res.json(user);
 };

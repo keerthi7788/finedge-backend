@@ -1,26 +1,15 @@
-// const express = require('express');
-// const app = express();
-// const PORT = process.env.PORT || 3000;
-
-// // Middleware
-// app.use(express.json());
-
-// // Health route
-// app.get('/health', (req, res) => {
-//   res.status(200).json({ status: 'OK', message: 'Server is running' });
-// });
-
-// // Start server
-// app.listen(PORT, () => {
-//   console.log(`Server running on http://localhost:${PORT}`);
-// });
-
 const express = require("express");
 const cors = require("cors");
 
+// Database connection
+const connectDB = require("./config/db");
+connectDB();
+
+// Routes
 const userRoutes = require("./routes/userRoutes");
 const transactionRoutes = require("./routes/transactionRoutes");
 
+// Middleware
 const logger = require("./middleware/logger");
 const errorHandler = require("./middleware/errorHandler");
 
@@ -31,18 +20,19 @@ app.use(cors());
 app.use(express.json());
 app.use(logger);
 
-app.use("/api/users", userRoutes);
-app.use("/api/transactions", transactionRoutes);
+// Register routes
+app.use("/api/v1/users", userRoutes);
+app.use("/api/v1/transactions", transactionRoutes);
 
+// Health check
 app.get("/health", (req, res) => {
-  res.json({
-    status: "OK",
-    message: "Server running"
-  });
+  console.log("Health route hit");
+  res.json({ status: "OK", message: "Server running" });
 });
 
+// Error handler
 app.use(errorHandler);
 
 app.listen(PORT, () => {
-  console.log(`Server running at http://localhost:${PORT}`);
+  console.log(`Server running at ${PORT}`);
 });

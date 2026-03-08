@@ -1,3 +1,4 @@
+const mongoose = require("mongoose");
 const fs = require("fs").promises;
 const path = require("path");
 
@@ -11,3 +12,16 @@ exports.getUsers = async () => {
 exports.saveUsers = async (users) => {
   await fs.writeFile(file, JSON.stringify(users, null, 2));
 };
+const userSchema = new mongoose.Schema({
+  name: {
+    type: String,
+    required: true
+  },
+  email: {
+    type: String,
+    required: true,
+    unique: true
+  }
+});
+
+module.exports = mongoose.model("User", userSchema);
