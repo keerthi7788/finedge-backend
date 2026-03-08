@@ -1,13 +1,20 @@
-const express = require("express");
+const express = require('express');
 const router = express.Router();
+const { validateJWT } = require('../middleware/validateJWT');
+const {
+    createTransaction,
+    getTransactions,
+    getTransactionById,
+    deleteTransaction,
+    getSummary
+} = require('../controllers/transactionController');
 
-const transactionController = require("../controllers/transactionController");
+router.use(validateJWT);
 
-router.post("/", transactionController.createTransaction);
-router.get("/", transactionController.getTransactions);
-router.get("/:id", transactionController.getTransactionById);
-router.delete("/:id", transactionController.deleteTransaction);
-
-router.get("/summary/:userId", transactionController.getSummary);
+router.post("/", createTransaction);
+router.get("/", getTransactions);
+router.get("/:id", getTransactionById);
+router.delete("/:id", deleteTransaction);
+router.get('/summary', getSummary);
 
 module.exports = router;
