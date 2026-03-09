@@ -1,3 +1,4 @@
+require('dotenv').config();
 const express = require("express");
 const cors = require("cors");
 
@@ -38,3 +39,5 @@ app.use(errorHandler);
 app.listen(PORT, () => {
   console.log(`Server running at http://localhost:${PORT}`);
 });
+
+module.exports = app; // for testing

@@ -44,7 +44,7 @@ const loginUser = async ({ email, password }) => {
 
 const createUser = async (req, res) => {
   const user = await userService.createUser(req.body);
-  res.json(user);
+  res.status(201).json(user);
 };
 
 const getUsers = async (req, res) => {
@@ -54,6 +54,7 @@ const getUsers = async (req, res) => {
 
 const getUserById = async (req, res) => {
   const user = await userService.getUserById(req.params.id);
+  if (!user) return res.status(404).json({ message: "User not found" });
   res.json(user);
 };
 

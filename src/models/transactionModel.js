@@ -5,12 +5,12 @@ const path = require("path");
 
 const file = path.join(__dirname, "../data/transactions.json");
 
-exports.getTransactions = async () => {
+const getTransactions = async () => {
   const data = await fs.readFile(file);
   return JSON.parse(data);
 };
 
-exports.saveTransactions = async (transactions) => {
+const saveTransactions = async (transactions) => {
   await fs.writeFile(file, JSON.stringify(transactions, null, 2));
 };
 
@@ -25,4 +25,6 @@ const transactionSchema = new mongoose.Schema({
   date: Date
 });
 
-module.exports = mongoose.model("Transaction", transactionSchema);
+const Transaction = mongoose.model("Transaction", transactionSchema);
+
+module.exports = { getTransactions, saveTransactions, Transaction };
