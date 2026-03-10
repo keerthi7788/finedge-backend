@@ -5,6 +5,7 @@ const {
     createTransaction,
     getTransactions,
     getTransactionById,
+    updateTransaction,
     deleteTransaction,
     getSummary
 } = require('../controllers/transactionController');
@@ -13,8 +14,9 @@ router.use(validateJWT);
 
 router.post("/", createTransaction);
 router.get("/", getTransactions);
-router.get("/:id", getTransactionById);
-router.delete("/:id", deleteTransaction);
 router.get('/summary', getSummary);
+router.get("/:id", getTransactionById);
+router.patch("/:id", updateTransaction);
+router.delete("/:id", deleteTransaction);
 
 module.exports = router;

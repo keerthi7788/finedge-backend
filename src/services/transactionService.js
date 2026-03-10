@@ -43,6 +43,16 @@ const deleteTransaction = async (id) => {
   return { message: "Transaction deleted" };
 };
 
+// Update transaction by ID
+const updateTransaction = async (id, data) => {
+  let transactions = await transactionModel.getTransactions();
+  const index = transactions.findIndex(t => t.id === id);
+  if (index === -1) return null;
+  transactions[index] = { ...transactions[index], ...data };
+  await transactionModel.saveTransactions(transactions);
+  return transactions[index];
+};
+
 // Get transaction summary for a user (with caching)
 const getTransactionSummary = async (userId) => {
   const cacheKey = `summary:${userId}`;
@@ -63,6 +73,7 @@ module.exports = {
   createTransaction,
   getTransactions,
   getTransactionById,
+  updateTransaction,
   deleteTransaction,
   getTransactionSummary
 };

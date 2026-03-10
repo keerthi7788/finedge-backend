@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { validateJWT } = require('../middleware/validateJWT');
+const { validateUser } = require('../middleware/validator');
 const {
     registerUser,
     loginUser,
@@ -10,16 +11,8 @@ const {
     deleteUser
 } = require('../controllers/userController');
 
-// register user
-router.post('/', async (req, res) => {
-    const user = req.body;
-    if (!user.email || !user.password) {
-        res.status(400).send({ message: 'Email and password are required' });
-        return;
-    }
-    const result = await registerUser(user);
-    res.status(result.status).send({ message: result.message, user: result.user });
-});
+// Create user
+router.post('/', validateUser, createUser);
 
 // POST /users/login - Authenticate user and return JWT
 router.post('/login', async (req, res) => {
@@ -43,7 +36,6 @@ router.post('/login', async (req, res) => {
 
 router.use(validateJWT);
 
-router.post("/", createUser);
 router.get("/", getUsers);
 router.get("/:id", getUserById);
 router.delete("/:id", deleteUser);
